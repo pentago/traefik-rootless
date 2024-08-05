@@ -73,12 +73,14 @@ jobs:
           file: Dockerfile
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=${{ (github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request') && 'true' || 'false' }}
+          provenance: mode=max
+          sbom: true
           labels: |
             "commit=${{ github.sha }}"
             "commit_url=${{ env.COMMIT_URL }}"
             "workflow_run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           load: true
-          tags: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_NAME }}:latest
 
       - name: Export Image Digests
         id: digest-prep
@@ -103,18 +105,17 @@ jobs:
     permissions:
       packages: read
     needs: [build]
+    services:
+      test:
+        image: ${{ needs.build.outputs.docker_build.name }}:latest
+        ports:
+          - 8080:80
 
     steps:
 
       - name: Test Docker Image
         run: |
-          docker run -d -p 8080:80 --name test ${{ env.IMAGE_NAME }}
-          sleep 5
           curl -v http://localhost:8080 || (docker logs test && exit 1)
-
-      - name: Clean Up
-        run: |
-          docker rm -f test
 
   publish:
     name: Publish Docker Multi-arch Manifest
@@ -166,13 +167,3 @@ jobs:
       - name: Inspect Image
         run: |
           docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
-
-      # - name: Setting-up SBOM Tooling
-      #   run: |
-      #     SYFT=$(curl -sLH "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/anchore/syft/releases/latest" | grep -E "syft.*_linux_amd64.tar.gz" | grep "browser_download_url" | cut -d '"' -f 4)
-      #     curl -sL $SYFT | tar -xzf - -C /tmp
-      #     chmod +x $(file /tmp/* | grep executable | cut -d ":" -f1)
-
-      # - name: Generating Image SBOM
-      #   run:
-      #     /tmp/syft --output cyclonedx-json=sbom.json packages ${{ env.IMAGE_NAME }}:${{ env.TRAEFIK_VERSION }}-${{ env.SHA_SHORT }}
