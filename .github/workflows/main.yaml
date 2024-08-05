@@ -49,11 +49,10 @@ jobs:
 
       - name: Test Docker Image
         run: |
-          docker run -d -p 8080:80 --name test ${{ env.IMAGE_NAME }}:latest
-          sleep 5
-          curl --fail -v http://localhost:8080 || (docker logs test && exit 1)
-          docker stop test
-          docker rm test
+          sed 's|TRAEFIK_ROOTLES_IMAGE|${{ env.IMAGE_NAME }}|g' tests/compose.yaml > compose.yaml
+          docker compose up -d
+          sleep 10
+          curl --fail --location --verbose http://localhost:8080/whoami || (docker logs traefik && exit 1)
 
   build:
     name: Build Images
