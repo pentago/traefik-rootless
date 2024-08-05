@@ -77,16 +77,8 @@ jobs:
             "commit=${{ github.sha }}"
             "commit_url=${{ env.COMMIT_URL }}"
             "workflow_run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-      - name: Save Docker Image Locally For Testing
-        run: |
-          docker save ${{ env.IMAGE_NAME }}:latest | gzip > /tmp/image.tar.gz
-
-      - name: Upload Docker Image
-        uses: actions/upload-artifact@v4.3.5
-        with:
-          name: image
-          path: /tmp/image.tar.gz
+          load: true
+          tags: ${{ env.IMAGE_NAME }}
 
       - name: Export Image Digests
         id: digest-prep
@@ -114,19 +106,9 @@ jobs:
 
     steps:
 
-      - name: Download Docker Image
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: image
-          path: /tmp/
-
-      - name: Load Docker Image
+      - name: Test Docker Image
         run: |
-          gunzip -c /tmp/image.tar.gz | docker load
-
-      - name: Run Docker Image
-        run: |
-          docker run -d -p 8080:80 image:latest
+          docker run -d -p 8080:80 --name test ${{ env.IMAGE_NAME }}
           sleep 5
           curl -v http://localhost:8080 || (docker logs test && exit 1)
 
