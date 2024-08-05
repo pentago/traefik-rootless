@@ -51,7 +51,7 @@ jobs:
         run: |
           sed 's|TRAEFIK_ROOTLES_IMAGE|${{ env.IMAGE_NAME }}|g' tests/compose.yaml > compose.yaml
           docker compose up -d
-          sleep 10
+          sleep 5
           curl --fail --location --verbose http://localhost:8080/whoami || (docker logs traefik && exit 1)
 
   build:
@@ -102,11 +102,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           provenance: mode=max
           outputs: |
-            type=image
-            name=${{ env.IMAGE_NAME }}
-            push-by-digest=true
-            name-canonical=true
-            push=${{ (github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request') && 'true' || 'false' }}
+            type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=${{ (github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request') && 'true' || 'false' }}
           labels: |
             "commit=${{ github.sha }}"
             "commit_url=${{ env.COMMIT_URL }}"
