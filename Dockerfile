@@ -17,6 +17,11 @@ COPY --from=source /usr/local/bin/traefik /
 
 # Final minimal image
 FROM scratch
+
+LABEL org.opencontainers.image.source = "https://hub.docker.com/_/traefik"
+LABEL org.opencontainers.image.licenses = "MIT"
+LABEL org.opencontainers.image.base.name = "scratch"
+
 COPY --from=source /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=source /usr/share/zoneinfo /usr/share/
 COPY --from=build /traefik /
