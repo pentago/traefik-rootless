@@ -77,7 +77,6 @@ jobs:
             "commit=${{ github.sha }}"
             "commit_url=${{ env.COMMIT_URL }}"
             "workflow_run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          push: true
 
       - name: Export Image Digests
         id: digest-prep
