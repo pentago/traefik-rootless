@@ -98,13 +98,15 @@ jobs:
     name: Test Container
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
+    permissions:
+      packages: read
     needs: [build]
 
     steps:
 
       - name: Run Docker Image
         run: |
-          docker run -d -p 80:80 --name test ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker run -d -p 80:80 --name test ${{ env.IMAGE_NAME }}:latest
 
       - name: Test Request
         run: |
@@ -175,4 +177,4 @@ jobs:
 
       # - name: Generating Image SBOM
       #   run:
-      #     /tmp/syft --output cyclonedx-json=sbom.json packages ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TRAEFIK_VERSION }}-${{ env.SHA_SHORT }}
+      #     /tmp/syft --output cyclonedx-json=sbom.json packages ${{ env.IMAGE_NAME }}:${{ env.TRAEFIK_VERSION }}-${{ env.SHA_SHORT }}
