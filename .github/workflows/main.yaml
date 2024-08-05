@@ -74,6 +74,11 @@ jobs:
 
     steps:
 
+      - name: Checking Out Branch
+        uses: actions/checkout@v4.1.7
+        with:
+          fetch-depth: 0
+
       - name: Set Utility Environment Variables
         run: |
           echo "TRAEFIK_VERSION=$(grep 'ARG TRAEFIK_VERSION' Dockerfile | cut -d '=' -f2)" >> $GITHUB_ENV
