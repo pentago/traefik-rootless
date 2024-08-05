@@ -1,4 +1,6 @@
-# Rootless Traefik
+[![Main CI](https://github.com/pentago/traefik-rootless/actions/workflows/main.yaml/badge.svg)](https://github.com/pentago/traefik-rootless/actions/workflows/main.yaml)
+
+# Rootless Traefik Container Image
 
 To be able to run this critical component as unprivileged and secure as possible, we had to be able to use custom Traefik image.
 
