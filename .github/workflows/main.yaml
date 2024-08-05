@@ -78,6 +78,16 @@ jobs:
             "commit_url=${{ env.COMMIT_URL }}"
             "workflow_run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
+      - name: Save Docker Image Locally For Testing
+        run: |
+          docker save ${{ env.IMAGE_NAME }}:latest | gzip > /tmp/image.tar.gz
+
+      - name: Upload Docker Image
+        uses: actions/upload-artifact@v4.3.5
+        with:
+          name: image
+          path: /tmp/image.tar.gz
+
       - name: Export Image Digests
         id: digest-prep
         run: |
@@ -104,30 +114,25 @@ jobs:
 
     steps:
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3.3.0
+      - name: Download Docker Image
+        uses: actions/download-artifact@v4.1.8
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: image
+          path: /tmp/
 
-      - name: Pull Docker Image
+      - name: Load Docker Image
         run: |
-          docker pull ${{ env.IMAGE_NAME }}:latest
+          gunzip -c /tmp/image.tar.gz | docker load
 
       - name: Run Docker Image
         run: |
-          docker run -d -p 8080:80 --name test ${{ env.IMAGE_NAME }}:latest
-
-      - name: Test Request
-        run: |
+          docker run -d -p 8080:80 image:latest
           sleep 5
           curl -v http://localhost:8080 || (docker logs test && exit 1)
 
       - name: Clean Up
         run: |
-          docker stop test
-          docker rm test
+          docker rm -f test
 
   publish:
     name: Publish Docker Multi-arch Manifest
