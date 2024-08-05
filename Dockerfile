@@ -18,7 +18,7 @@ COPY --from=source /usr/local/bin/traefik /
 # Final minimal image
 FROM scratch
 
-LABEL org.opencontainers.image.source="https://hub.docker.com/_/traefik"
+LABEL org.opencontainers.image.source="https://github.com/pentago/traefik-rootless"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.base.name="scratch"
 
