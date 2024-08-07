@@ -68,13 +68,11 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64
-          # - linux/386
-          # - linux/amd64/v2
-          # - linux/amd64/v3
-          # - linux/arm/v6
-          # - linux/arm/v7
-          # - linux/ppc64le
-          # - linux/s390x
+          - linux/arm/v6
+          - linux/arm/v7
+          - linux/ppc64le
+          - linux/s390x
+          - linux/riscv64
 
     steps:
 
