@@ -167,6 +167,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}},prefix=v
             type=ref,event=branch
             type=ref,event=pr
+            type=raw,value=pr-${{ github.event.pull_request.number }}
           flavor: |
             latest=auto
 
@@ -174,11 +175,6 @@ jobs:
         working-directory: /tmp/digests
         run: |
           echo "### Listing Directory ###"
-          ls -la
-          echo "### Catting Files ###"
-          cat *
-          echo "### Printing DOCKER_METADATA_OUTPUT_JSON ###"
-          echo $DOCKER_METADATA_OUTPUT_JSON
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
 
       - name: Inspect image
