@@ -114,9 +114,6 @@ jobs:
             "commit=${{ github.sha }}"
             "commit_url=${{ env.COMMIT_URL }}"
             "workflow_run=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.SHA_SHORT }}
-            ${{ github.event_name == 'push' && github.ref_type == 'tag' && github.ref || '' }}
 
       - name: Export Image Digests
         id: digest-prep
