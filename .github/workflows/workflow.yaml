@@ -8,11 +8,9 @@ on:
     tags:
       - 'v*'
   pull_request:
-  workflow_run:
-    workflows:
-      - Check
-    types:
-      - completed
+    branches:
+      - dev
+      - main
   workflow_dispatch:
 
 env:
