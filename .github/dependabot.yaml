@@ -7,6 +7,9 @@ updates:
       interval: weekly
       day: saturday
       time: "07:00"
+    labels:
+      - "automated"
+    target-branch: dev
     groups:
       github:
         patterns:

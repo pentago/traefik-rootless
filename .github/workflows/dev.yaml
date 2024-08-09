@@ -1,15 +1,15 @@
-name: Main CI
+name: Dev CI
 
 on:
   push:
     paths:
       - 'Dockerfile'
       - '.github/workflows/**'
+      - 'tests/**'
     branches:
-      - "main"
-    tags:
-      - 'v*'
+      - "dev"
   pull_request:
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -22,9 +22,28 @@ permissions:
 
 jobs:
 
+  qc:
+    name: Code Linting and Validation
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checking Out Branch
+        uses: actions/checkout@v4.1.7
+        with:
+          fetch-depth: 0
+
+      - name: Linting Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+
+      - name: Linting Test Compose
+        run: |
+          yamllint -s tests/*.yaml
+
   build:
     name: Building Images
     runs-on: ubuntu-latest
+    needs: [qc]
     strategy:
       fail-fast: true
       matrix:
@@ -160,9 +179,8 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=$TRAEFIK_VERSION
-          flavor: |
-            latest=true
+            type=ref,event=branch
+            type=ref,event=pr,prefix=pr-
 
       - name: Create Manifest List and Push
         working-directory: /tmp/digests
