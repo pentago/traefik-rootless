@@ -1,17 +1,15 @@
-name: Dev CI
+name: Build
 
 on:
   push:
-    paths:
-      - 'Dockerfile'
-      - '.github/workflows/**'
-      - 'tests/**'
     branches:
-      - "dev"
-  workflow_run:
-    workflows: ["Quality Check CI"]
-    types: [completed]
+      - dev
+      - main
+    tags:
+      - 'v*'
   pull_request:
+    types:
+      - completed
   workflow_dispatch:
 
 env:
@@ -165,6 +163,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr,prefix=pr-
+            type=semver,pattern={{version}}
 
       - name: Create Manifest List and Push
         working-directory: /tmp/digests

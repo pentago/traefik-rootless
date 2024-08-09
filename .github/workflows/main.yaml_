@@ -160,7 +160,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=$TRAEFIK_VERSION
+            type=semver,pattern={{version}}
           flavor: |
             latest=true
 
