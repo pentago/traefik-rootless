@@ -1,15 +1,15 @@
-name: Main CI
+name: Dev CI
 
 on:
   push:
     paths:
       - 'Dockerfile'
       - '.github/workflows/**'
+      - 'tests/**'
     branches:
-      - "main"
-    tags:
-      - 'v*'
+      - "dev"
   pull_request:
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -160,9 +160,8 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=$TRAEFIK_VERSION
-          flavor: |
-            latest=true
+            type=ref,event=branch
+            type=ref,event=pr,prefix=pr-
 
       - name: Create Manifest List and Push
         working-directory: /tmp/digests
