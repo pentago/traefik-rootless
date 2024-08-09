@@ -15,6 +15,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Do this '...'
 2. Do that '...'
 3. Do other thing '...'
@@ -26,9 +27,10 @@ A clear and concise description of what you expected to happen.
 A dump of relevant logs to help debug the issue.
 
 **Environment (please complete the following information):**
- - OS: [e.g. Linux]
- - Platform [e.g. AMD64]
- - Version [e.g. v3.1.1]
+
+- OS: [e.g. Linux]
+- Platform [e.g. AMD64]
+- Version [e.g. v3.1.1]
 
 **Additional context**
 Add any other context about the problem here.
