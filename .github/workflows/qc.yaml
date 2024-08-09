@@ -2,22 +2,15 @@ name: Quality Check
 
 on:
   push:
-    paths:
-      - '*.yaml'
-      - '*.yml'
-      - '*.md'
-    branches:
-      - "*"
+    branches-ignore:
+      - 'main'
   pull_request:
-    paths:
-      - '*.yaml'
-      - '*.yml'
-      - '*.md'
+  workflow_dispatch:
 
 jobs:
 
   qc:
-    name: Code Linting and Validation
+    name: Linting and Validation
     runs-on: ubuntu-latest
 
     steps:
@@ -30,10 +23,12 @@ jobs:
       - name: Linting Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
 
-      - name: Linting Test Compose
+      - name: Linting Test
         run: |
           yamllint -s tests/*.yaml
 
       - name: Linting Docs
-        run: |
-          find ./ -type f -name "*.md" -exec markdownlint {} \;
+        uses: DavidAnson/markdownlint-cli2-action@v16.0.0
+        with:
+          globs: |
+            README.md
